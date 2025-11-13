@@ -74,10 +74,10 @@ r1/sensors_node:
 r1/system_node:
   ros__parameters:
     use_sim_time: true
-    use_real_time: true
+    use_real_time: false
     position_tolerance: 0.1
     angle_tolerance: 0.05
-    tf_namespace: r1
+    tf_prefix: r1
 
 r2/controller_node:
   ros__parameters:
@@ -155,7 +155,7 @@ r2/sensors_node:
 r2/system_node:
   ros__parameters:
     use_sim_time: true
-    use_real_time: true
+    use_real_time: false
     position_tolerance: 0.1
     angle_tolerance: 0.05
-    tf_namespace: r2
+    tf_prefix: r2
