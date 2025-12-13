@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.13.2"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>EasyNav Costmap Stack: easynav_indoor_testcase</title>
+<title>EasyNav Costmap Stack: Parameter scenarios</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -84,14 +84,35 @@ $(function(){ initResizable(false); });
 </div>
 
 <div><div class="header">
-  <div class="headertitle"><div class="title">easynav_indoor_testcase </div></div>
+  <div class="headertitle"><div class="title">Parameter scenarios </div></div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p><a class="anchor" id="md_README"></a></p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Param file   </th><th class="markdownTableHeadNone">Robot   </th><th class="markdownTableHeadNone">Sim/Real   </th><th class="markdownTableHeadNone">World   </th><th class="markdownTableHeadNone">Sensors   </th><th class="markdownTableHeadNone">Maps Managers   </th><th class="markdownTableHeadNone">Localizer   </th><th class="markdownTableHeadNone">Planner   </th><th class="markdownTableHeadNone">Controller   </th><th class="markdownTableHeadNone">Checked    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><a href="https://github.com/EasyNavigation/easynav_indoor_testcase/blob/main/robots_params/dummy.params.yaml">Test1</a>   </td><td class="markdownTableBodyNone">Kobuki   </td><td class="markdownTableBodyNone">None   </td><td class="markdownTableBodyNone">None   </td><td class="markdownTableBodyNone">None   </td><td class="markdownTableBodyNone">Dummy   </td><td class="markdownTableBodyNone">Dummy   </td><td class="markdownTableBodyNone">Dummy   </td><td class="markdownTableBodyNone">Dummy   </td><td class="markdownTableBodyNone">✅    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><a href="https://github.com/EasyNavigation/easynav_indoor_testcase/blob/main/robots_params/dummy.sensor.params.yaml">Test2</a>   </td><td class="markdownTableBodyNone">Kobuki   </td><td class="markdownTableBodyNone">Sim   </td><td class="markdownTableBodyNone">House   </td><td class="markdownTableBodyNone">Laser   </td><td class="markdownTableBodyNone">Simple   </td><td class="markdownTableBodyNone">AMCL/Simple   </td><td class="markdownTableBodyNone">Dummy   </td><td class="markdownTableBodyNone">Dummy   </td><td class="markdownTableBodyNone">✅    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><a href="https://github.com/EasyNavigation/easynav_indoor_testcase/blob/main/robots_params/simple.params.yaml">Test3</a>   </td><td class="markdownTableBodyNone">Kobuki   </td><td class="markdownTableBodyNone">Sim   </td><td class="markdownTableBodyNone">House   </td><td class="markdownTableBodyNone">Laser   </td><td class="markdownTableBodyNone">Simple   </td><td class="markdownTableBodyNone">AMCL/Simple   </td><td class="markdownTableBodyNone">A*/Simple   </td><td class="markdownTableBodyNone">Simple   </td><td class="markdownTableBodyNone">✅    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><a href="https://github.com/EasyNavigation/easynav_indoor_testcase/blob/main/robots_params/costmap.serest.params.yaml">Test4</a>   </td><td class="markdownTableBodyNone">Kobuki   </td><td class="markdownTableBodyNone">Sim   </td><td class="markdownTableBodyNone">House   </td><td class="markdownTableBodyNone">Laser   </td><td class="markdownTableBodyNone">Costmap (obstacles + inflation)   </td><td class="markdownTableBodyNone">AMCL/Costmap   </td><td class="markdownTableBodyNone">A*/Costmap   </td><td class="markdownTableBodyNone">Serest   </td><td class="markdownTableBodyNone">✅    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><a href="https://github.com/EasyNavigation/easynav_indoor_testcase/blob/main/robots_params/costmap.mppi.routed.params.yaml">Test5</a>   </td><td class="markdownTableBodyNone">Kobuki   </td><td class="markdownTableBodyNone">Sim   </td><td class="markdownTableBodyNone">House   </td><td class="markdownTableBodyNone">Laser   </td><td class="markdownTableBodyNone">Costmap (obstacles + inflation) + Routes   </td><td class="markdownTableBodyNone">AMCL/Costmap   </td><td class="markdownTableBodyNone">A*/Costmap   </td><td class="markdownTableBodyNone">MPPI   </td><td class="markdownTableBodyNone">✅    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><a href="https://github.com/EasyNavigation/easynav_indoor_testcase/blob/main/robots_params/costmap.mpc.params.yaml">Test6</a>   </td><td class="markdownTableBodyNone">Kobuki   </td><td class="markdownTableBodyNone">Sim   </td><td class="markdownTableBodyNone">House   </td><td class="markdownTableBodyNone">Laser   </td><td class="markdownTableBodyNone">Costmap (obstacles + inflation)   </td><td class="markdownTableBodyNone">AMCL/Costmap   </td><td class="markdownTableBodyNone">A*/Costmap   </td><td class="markdownTableBodyNone">MPC + Collision   </td><td class="markdownTableBodyNone">✅    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><a href="https://github.com/EasyNavigation/easynav_indoor_testcase/blob/main/robots_params/navmap.ls.params.yaml">Test7</a>   </td><td class="markdownTableBodyNone">Summit XL   </td><td class="markdownTableBodyNone">Sim   </td><td class="markdownTableBodyNone">URJC Dig   </td><td class="markdownTableBodyNone">Laser 3D   </td><td class="markdownTableBodyNone">NavMap   </td><td class="markdownTableBodyNone">LidarSlam   </td><td class="markdownTableBodyNone">A*/NavMap   </td><td class="markdownTableBodyNone">MPC   </td><td class="markdownTableBodyNone">✅    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><a href="https://github.com/EasyNavigation/easynav_indoor_testcase/blob/main/robots_params/bonxai.amcl.params.urjc.yaml">Test8</a>   </td><td class="markdownTableBodyNone">Summit XL   </td><td class="markdownTableBodyNone">Sim   </td><td class="markdownTableBodyNone">URJC Dig   </td><td class="markdownTableBodyNone">Laser 3D   </td><td class="markdownTableBodyNone">Bonxai + NavMap (obstacles + inflation)   </td><td class="markdownTableBodyNone">AMCL   </td><td class="markdownTableBodyNone">A*/NavMap   </td><td class="markdownTableBodyNone">MPC   </td><td class="markdownTableBodyNone">✅   </td></tr>
+</table>
 <h1><a class="anchor" id="autotoc_md1"></a>
 Install</h1>
 <p>First get all the required dependencies: </p><div class="fragment"><div class="line">rosdep install --from-paths src --ignore-src -r -y</div>
-</div><!-- fragment --> </div></div><!-- PageDoc -->
+</div><!-- fragment --><p><a href="https://github.com/EasyNavigation/easynav_indoor_testcase/blob/main/robots_params/bonxai.amcl.params.https://github.com/EasyNavigation/easynav_indoor_testcase/blob/main/robots_params/bonxai.amcl.params.urjc.yaml">https://github.com/EasyNavigation/easynav_indoor_testcase/blob/main/robots_params/bonxai.amcl.params.https://github.com/EasyNavigation/easynav_indoor_testcase/blob/main/robots_params/bonxai.amcl.params.urjc.yaml</a>) </p>
+</div></div><!-- PageDoc -->
 <a href="doxygen_crawl.html"></a>
 </div><!-- contents -->
 <!-- start footer part -->
