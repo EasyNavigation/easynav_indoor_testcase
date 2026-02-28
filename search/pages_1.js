@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['scenarios_0',['Parameter scenarios',['../index.html',1,'']]]
+  ['parameter_20scenarios_0',['Parameter scenarios',['../index.html',1,'']]]
 ];

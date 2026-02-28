@@ -2,7 +2,7 @@ var indexSectionsWithContent =
 {
   0: "iprs",
   1: "r",
-  2: "ps"
+  2: "ips"
 };
 
 var indexSectionNames =
