@@ -3,6 +3,6 @@ project(easynav_indoor_testcase)
 
 find_package(ament_cmake REQUIRED)
 
-install(DIRECTORY maps robots_params launch DESTINATION share/${PROJECT_NAME})
+install(DIRECTORY maps robots_params launch rviz_config DESTINATION share/${PROJECT_NAME})
 
 ament_package()
