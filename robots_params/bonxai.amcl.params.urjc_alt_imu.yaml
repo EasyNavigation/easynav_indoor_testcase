@@ -126,10 +126,12 @@ sensors_node:
       topic: front_laser/points
       type: sensor_msgs/msg/PointCloud2
       plugin: easynav_sensors/PointPerceptionHandler
+      group: points
     camera:
       topic: front_camera/depth/color/points
       type: sensor_msgs/msg/PointCloud2
       plugin: easynav_sensors/PointPerceptionHandler
+      group: points
     imu:
       topic: imu/data
       type: sensor_msgs/msg/Imu

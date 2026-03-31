@@ -42,6 +42,7 @@ sensors_node:
     laser:
       topic: front_laser/points
       type: sensor_msgs/msg/PointCloud2
+      group: points
     camera:
       topic: front_camera/depth/color/points
       type: sensor_msgs/msg/PointCloud2
