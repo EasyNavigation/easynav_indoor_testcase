@@ -32,14 +32,14 @@ def generate_launch_description():
     declare_params_file_cmd = DeclareLaunchArgument(
         'params_file',
         default_value=os.path.join(
-            bringup_dir, 'robots_params', 'costmap.serest.params.yaml'),
+            bringup_dir, 'robots_params', 'bonxai.amcl.params.urjc_alt_imu.yaml'),
         description='Full path to the ROS2 parameters file for easynav',
     )
 
     declare_rviz_config_cmd = DeclareLaunchArgument(
         'rviz_config',
         default_value=os.path.join(
-            bringup_dir, 'rviz_config', 'easynav_costmap.rviz'),
+            bringup_dir, 'rviz_config', 'easynav_bonxai_amcl.rviz'),
         description='Full path to the RViz2 configuration file',
     )
 

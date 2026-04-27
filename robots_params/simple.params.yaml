@@ -56,9 +56,8 @@ sensors_node:
     sensors: [laser1]
     perception_default_frame: odom
     laser1:
-      topic: /scan_raw
+      topic: scan_raw
       type: sensor_msgs/msg/LaserScan
-      group: points
 
 system_node:
   ros__parameters:

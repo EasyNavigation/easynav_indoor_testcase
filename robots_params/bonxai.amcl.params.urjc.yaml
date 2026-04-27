@@ -10,7 +10,7 @@ controller_node:
       brake_acc: 0.1
       safety_margin: 0.30
       downsample_leaf_size: 0.3
-    controller_types: [mpc]
+    controller_types: [mppi]
     mpc:
       rt_freq: 30.0 
       plugin: easynav_mpc_controller/MPCController
@@ -99,7 +99,7 @@ maps_manager_node:
       plugin: easynav_navmap_maps_manager/NavMapMapsManager
       package: easynav_indoor_testcase
       navmap_path_file: maps/excavation_urjc.navmap
-      filters: [obstacles, inflation]
+      filters: [obstacles]
       obstacles:
         plugin: easynav_navmap_maps_manager/NavMapMapsManager/ObstaclesFilter
       inflation:
