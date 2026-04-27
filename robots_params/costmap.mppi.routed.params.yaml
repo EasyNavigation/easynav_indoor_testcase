@@ -86,9 +86,11 @@ sensors_node:
     laser1:
       topic: scan_raw
       type: sensor_msgs/msg/LaserScan
+      group: points
     camera1:
       topic: rgbd_camera/points
       type: sensor_msgs/msg/PointCloud2
+      group: points
 
 system_node:
   ros__parameters:

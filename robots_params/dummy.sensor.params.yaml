@@ -57,6 +57,7 @@ sensors_node:
     laser1:
       topic: scan_raw
       type: sensor_msgs/msg/LaserScan
+      group: points
 
 system_node:
   ros__parameters:
