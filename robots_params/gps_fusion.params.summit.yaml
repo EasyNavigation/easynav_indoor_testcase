@@ -1,3 +1,21 @@
+# Copyright (c) 2025 Intelligent Robotics Lab (URJC)
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Summit XL (Robotnik) navigating with GPS fusion localization,
+# using the easynav_fusion_localizer/FusionLocalizer plugin (robot_localization UKF).
+# Fuses wheel odometry, IMU and GPS into a single map-referenced estimate.
+
 controller_node:
   ros__parameters:
     use_sim_time: true
@@ -13,15 +31,15 @@ controller_node:
       max_angular_decel: 2.0
     controller_types: [serest]
     serest:
-      rt_freq: 30.0 
+      rt_freq: 30.0
       plugin: easynav_serest_controller/SerestController
       allow_reverse: true
-      v_progress_min: 0.08        # 8 cm/s de crucero mínimo cuando alineado
-      k_s_share_max: 0.5          # succión lateral no cancela >50% del avance
-      k_theta: 2.5                # sube un poco
+      v_progress_min: 0.08
+      k_s_share_max: 0.5
+      k_theta: 2.5
       k_y: 1.5
-      goal_pos_tol: 0.1          # 7 cm
-      goal_yaw_tol_deg: 6.0       # 6 grados
+      goal_pos_tol: 0.1
+      goal_yaw_tol_deg: 6.0
       slow_radius: 0.60
       slow_min_speed: 0.03
       final_align_k: 2.0
@@ -38,29 +56,81 @@ controller_node:
 localizer_node:
   ros__parameters:
     use_sim_time: true
-    localizer_types: [costmap]
-    costmap:
+    localizer_types: [gps_fusion]
+    gps_fusion:
       rt_freq: 50.0
       freq: 5.0
-      reseed_freq: 1.0
-      plugin: easynav_costmap_localizer/AMCLLocalizer
-      num_particles: 100
-      noise_translation: 0.05
-      noise_rotation: 0.1
-      noise_translation_to_rotation: 0.1
-      initial_pose:
-        x: 0.0
-        y: 0.1
-        yaw: 0.0
-        std_dev_xy: 0.1
-        std_dev_yaw: 0.01
+      reseed_freq: 0.1
+      plugin: easynav_fusion_localizer/FusionLocalizer
+      # GPS datum: replace with the latitude/longitude/altitude (deg, deg, m)
+      # of the local ENU origin for your deployment site.
+      latitude_origin: 40.2834931
+      longitude_origin: -3.8207254
+      altitude_origin: 746.184
+      global_filter:
+        two_d_mode: true
+        publish_tf: true
+
+        # --- Reference Frames ---
+        map_frame: map
+        odom_frame: odom
+        base_link_frame: base_link
+        world_frame: map
+
+        # --- INPUT 1: GPS ---
+        gps0: /gps/fix
+        gps0_config:
+          [true,  true,  false,
+          false, false, false,
+          false, false, false,
+          false, false, false,
+          false, false, false]
+        gps0_differential: false
+
+        # --- INPUT 2: Wheel Odometry (Summit XL base) ---
+        odom0: /robotnik_base_control/odom
+        odom0_config:
+          [false, false, false,
+          false, false, false,
+          true,  true,  false,
+          false, false, true,
+          false, false, false]
+        odom0_differential: false
+
+        # --- INPUT 3: IMU ---
+        imu0: /imu/data
+        imu0_config:
+          [false, false, false,
+          false, false, false,
+          false, false, false,
+          false, false, true,
+          false, false, false]
+        imu0_differential: false
+        imu0_remove_gravitational_acceleration: true
+
+        # --- Process Variances ---
+        process_noise_covariance: [0.05, 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,   0.0,   0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+                                  0.0,  0.05, 0.0,  0.0,  0.0,  0.0,  0.0,   0.0,   0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+                                  0.0,  0.0,  0.06, 0.0,  0.0,  0.0,  0.0,   0.0,   0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+                                  0.0,  0.0,  0.0,  0.03, 0.0,  0.0,  0.0,   0.0,   0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+                                  0.0,  0.0,  0.0,  0.0,  0.03, 0.0,  0.0,   0.0,   0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+                                  0.0,  0.0,  0.0,  0.0,  0.0,  0.06, 0.0,   0.0,   0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+                                  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.025, 0.0,   0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+                                  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,   0.025, 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+                                  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,   0.0,   0.04, 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+                                  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,   0.0,   0.0,  0.01, 0.0,  0.0,  0.0,  0.0,  0.0,
+                                  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,   0.0,   0.0,  0.0,  0.01, 0.0,  0.0,  0.0,  0.0,
+                                  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,   0.0,   0.0,  0.0,  0.0,  0.02, 0.0,  0.0,  0.0,
+                                  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,   0.0,   0.0,  0.0,  0.0,  0.0,  0.01, 0.0,  0.0,
+                                  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,   0.0,   0.0,  0.0,  0.0,  0.0,  0.0,  0.01, 0.0,
+                                  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,   0.0,   0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.015]
 
 maps_manager_node:
   ros__parameters:
     use_sim_time: true
     map_types: [costmap]
     costmap:
-      freq: 10.0 
+      freq: 10.0
       plugin: easynav_costmap_maps_manager/CostmapMapsManager
       package: easynav_indoor_testcase
       map_path_file: maps/home2.yaml
@@ -76,9 +146,9 @@ maps_manager_node:
 planner_node:
   ros__parameters:
     use_sim_time: true
-    planner_types: [simple]
-    simple:
-      freq: 0.5
+    planner_types: [costmap]
+    costmap:
+      freq: 10.0
       plugin: easynav_costmap_planner/CostmapPlanner
       cost_factor: 10.0
       continuous_replan: true
@@ -87,10 +157,19 @@ sensors_node:
   ros__parameters:
     use_sim_time: true
     forget_time: 0.5
-    sensors: [laser1]
+    sensors: [laser1, imu, gps]
+    perception_default_frame: odom
     laser1:
-      topic: scan_raw
-      type: sensor_msgs/msg/LaserScan
+      topic: /front_laser/points
+      type: sensor_msgs/msg/PointCloud2
+      group: points
+    imu:
+      topic: /imu/data
+      type: sensor_msgs/msg/Imu
+    gps:
+      topic: /gps/fix
+      type: sensor_msgs/msg/NavSatFix
+      group: gnss
 
 system_node:
   ros__parameters:
@@ -120,7 +199,7 @@ recovery_node:
       # tried in priority order (lower first) for each ERROR diagnostic they can handle:
       #   specific movement fixes (10) -> terminate EasyNav on a miswired graph (100)
       #   -> wait for a human (1000) -> cancel the mission (2000).
-      evaluator_types: [no_path, obstacle_close, controller_stuck, amcl_convergence, ros_graph]
+      evaluator_types: [no_path, obstacle_close, controller_stuck, ros_graph]
       no_path:
         plugin: easynav_no_path_evaluator/NoPathEvaluator
       obstacle_close:
@@ -132,9 +211,6 @@ recovery_node:
         linear_velocity_threshold: 0.02
         progress_distance_threshold: 0.05
         stuck_time_threshold: 3.0
-      amcl_convergence:
-        plugin: easynav_costmap_localizer/AmclConvergenceEvaluator
-        covariance_threshold: 1.0   # same as amcl_relocalize
       ros_graph:
         plugin: easynav_ros_graph_evaluator/RosGraphEvaluator
         freq: 1.0
@@ -144,18 +220,12 @@ recovery_node:
         ignored_topics: ["goal_pose", "initialpose", "incoming_map", "incoming_occ_map", "incoming_pc2_map"]
         # Tools that only watch cmd_vel: they do not count as something driving the robot.
         ignored_consumers: ["easynav_tui_*", "_ros2cli*"]
-      mitigation_types: [retreat, amcl_relocalize, advance, shutdown, human_assistance, cancel_mission]
+      mitigation_types: [retreat, advance, shutdown, human_assistance, cancel_mission]
       retreat:
         plugin: easynav_safe_retreat_recovery/SafeRetreatRecovery
         priority: 10
         safe_distance: 0.5          # > obstacle_close.safe_distance, so it does not re-trigger
         retreat_speed: 0.1
-      amcl_relocalize:
-        plugin: easynav_costmap_localizer/AmclRelocalizeMitigation
-        priority: 10
-        covariance_threshold: 1.0
-        rotation_speed: 0.3
-        timeout: 5.0
       advance:
         plugin: easynav_advance_recovery/AdvanceRecovery
         priority: 10
