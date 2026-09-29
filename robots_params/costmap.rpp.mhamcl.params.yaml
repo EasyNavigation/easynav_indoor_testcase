@@ -1,23 +1,27 @@
 controller_node:
   ros__parameters:
     use_sim_time: true
+    colision_checker:
+      active: true
+      debug_markers: true
+      downsample_leaf_size: 0.05
+      robot_radius: 0.30
+      brake_acc: 1.0
+      safety_margin: 0.05
+    # Robot velocity/acceleration limits: the controller plugins use them, and the velocity
+    # smoother enforces them on every command published (see ControllerNode).
+    robot_limits:
+      max_linear_vel: 0.6
+      min_linear_vel: -0.3
+      max_angular_vel: 1.2
+      max_linear_acc: 1.0
+      max_linear_decel: 1.0
+      max_angular_acc: 2.0
+      max_angular_decel: 2.0
     controller_types: [rpp]
     rpp:
       rt_freq: 30.0
       plugin: easynav_regulated_pp_controller/RegulatedPurePursuitController
-      # Own copy of the geometry used by its obstacle-proximity speed regulation below
-      # (unrelated to the level-0 safety reflex configured under system_node).
-      robot_radius: 0.30
-      safety_margin: 0.05
-      # Velocity / acceleration limits (TurtleBot 2 / Kobuki base)
-      max_linear_vel: 0.6
-      min_linear_vel: -0.3
-      max_angular_vel: 1.2
-      min_angular_vel: -1.2
-      max_linear_accel: 1.0
-      max_linear_decel: 1.0
-      max_angular_accel: 2.0
-      max_angular_decel: 2.0
       use_dynamic_window: false
       allow_reversing: false
       # Lookahead
@@ -123,39 +127,3 @@ system_node:
     use_real_time: true
     position_tolerance: 0.3
     angle_tolerance: 0.15
-    safety_reflex_types: [collision]
-    collision:
-      plugin: easynav_controller/CollisionSafetyReflex
-      debug_markers: true
-      downsample_leaf_size: 0.05
-      robot_radius: 0.30
-      brake_acc: 1.0
-      safety_margin: 0.05
-
-recovery_node:
-  ros__parameters:
-    use_sim_time: true
-    evaluator_types: [no_path, obstacle_close, controller_stuck]
-    no_path:
-      plugin: easynav_no_path_evaluator/NoPathEvaluator
-    obstacle_close:
-      plugin: easynav_obstacle_too_close_evaluator/ObstacleTooCloseEvaluator
-      safe_distance: 0.4
-    controller_stuck:
-      plugin: easynav_controller_stuck_evaluator/ControllerStuckEvaluator
-    mitigation_types: [retreat, advance, human_assistance, cancel_mission]
-    retreat:
-      plugin: easynav_safe_retreat_recovery/SafeRetreatRecovery
-    advance:
-      plugin: easynav_advance_recovery/AdvanceRecovery
-      priority: 10
-      advance_distance: 0.3
-      advance_speed: 0.1
-      escalate_after: 15.0
-    human_assistance:
-      plugin: easynav_human_assistance_recovery/HumanAssistanceRecovery
-      priority: 1000
-      timeout: 30.0
-    cancel_mission:
-      plugin: easynav_cancel_mission_recovery/CancelMissionRecovery
-      priority: 2000
