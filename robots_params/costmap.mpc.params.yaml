@@ -1,6 +1,9 @@
 controller_node:
   ros__parameters:
     use_sim_time: true
+    colision_checker:
+      active: true
+      debug_markers: true
     # Robot velocity/acceleration limits: the controller plugins use them, and the velocity
     # smoother enforces them on every command published (see ControllerNode).
     robot_limits:
