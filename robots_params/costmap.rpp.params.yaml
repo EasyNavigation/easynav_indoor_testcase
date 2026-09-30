@@ -1,13 +1,6 @@
 controller_node:
   ros__parameters:
     use_sim_time: true
-    colision_checker:
-      active: true
-      debug_markers: true
-      downsample_leaf_size: 0.05
-      robot_radius: 0.30
-      brake_acc: 1.0
-      safety_margin: 0.05
     # Robot velocity/acceleration limits: the controller plugins use them, and the velocity
     # smoother enforces them on every command published (see ControllerNode).
     robot_limits:
@@ -22,6 +15,9 @@ controller_node:
     rpp:
       rt_freq: 30.0
       plugin: easynav_regulated_pp_controller/RegulatedPurePursuitController
+      # Area where obstacles regulate the velocity.
+      robot_radius: 0.30
+      safety_margin: 0.05
       use_dynamic_window: false
       allow_reversing: false
       # Lookahead

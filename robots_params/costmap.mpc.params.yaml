@@ -1,9 +1,6 @@
 controller_node:
   ros__parameters:
     use_sim_time: true
-    colision_checker:
-      active: true
-      debug_markers: true
     # Robot velocity/acceleration limits: the controller plugins use them, and the velocity
     # smoother enforces them on every command published (see ControllerNode).
     robot_limits:
@@ -18,10 +15,9 @@ controller_node:
     mpc:
       rt_freq: 30.0
       plugin: easynav_mpc_controller/MPCController
-      # MPCController's own in-loop obstacle constraint (distinct from the level-0 safety
-      # reflex configured under recovery_node).
-      colision_checker:
-        active: true
+      # MPCController's own in-loop obstacle constraint (braking before an obstacle ahead is
+      # the recovery system's, in recovery_node).
+      use_collision_checker: true
 
 localizer_node:
   ros__parameters:
