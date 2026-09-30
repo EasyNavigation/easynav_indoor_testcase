@@ -147,3 +147,26 @@ system_node:
     use_real_time: true
     position_tolerance: 0.3
     angle_tolerance: 0.15
+
+recovery_node:
+  ros__parameters:
+    use_sim_time: true
+    # Recovery system: a RecoveryManagerBase plugin, with its own parameters below it.
+    # SimpleRecoveryManager: brakes before an obstacle ahead, rotates to relocalize, backs up when
+    # stuck, and aborts the mission or terminates EasyNav when that is not enough.
+    recovery_manager:
+      plugin: easynav_simple_recovery/SimpleRecoveryManager
+      robot_radius: 0.70
+      stop_distance: 0.3          # brake if an obstacle is this close ahead (beyond robot_radius)
+      min_obstacle_z: 0.05
+      max_obstacle_z: 2.0
+      sensors_timeout: 5.0        # s without sensor data: terminate EasyNav
+      max_position_variance: 1.0  # m^2 in x or y: localization lost
+      relocalize_timeout: 20.0
+      rotate_speed: 0.3
+      stuck_time: 10.0
+      stuck_distance: 0.05
+      backup_speed: 0.1
+      backup_time: 2.0
+      max_backup_attempts: 3
+      slow_down_max_linear_vel: 0.1  # still stuck after the attempts: slow down, then abort
