@@ -4,8 +4,6 @@ controller_node:
     colision_checker:
       active: false
       debug_markers: false
-      robot_radius: 0.70
-      robot_height: 1.0
       z_min_filter: 0.3
       brake_acc: 0.1
       safety_margin: 0.30
@@ -143,6 +141,11 @@ sensors_node:
 
 system_node:
   ros__parameters:
+    # The robot's shape, shared by every component (collision checking, inflation, recovery...).
+    robot_geometry:
+      radius: 0.7
+      inscribed_radius: 0.3  # largest circle inside the robot
+      height: 1.0
     use_sim_time: true
     use_real_time: true
     position_tolerance: 0.3
@@ -156,10 +159,8 @@ recovery_node:
     # stuck, and aborts the mission or terminates EasyNav when that is not enough.
     recovery_manager:
       plugin: easynav_simple_recovery/SimpleRecoveryManager
-      robot_radius: 0.70
-      stop_distance: 0.3          # brake if an obstacle is this close ahead (beyond robot_radius)
+      stop_distance: 0.3          # brake if an obstacle is this close ahead (beyond the robot radius)
       min_obstacle_z: 0.05
-      max_obstacle_z: 2.0
       sensors_timeout: 5.0        # s without sensor data: terminate EasyNav
       max_position_variance: 1.0  # m^2 in x or y: localization lost
       relocalize_timeout: 20.0
