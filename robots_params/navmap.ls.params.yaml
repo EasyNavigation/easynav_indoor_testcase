@@ -64,6 +64,10 @@ sensors_node:
 
 system_node:
   ros__parameters:
+    # The robot's shape, shared by every component (collision checking, inflation, recovery...).
+    robot_geometry:
+      radius: 0.3
+      height: 0.5
     use_sim_time: true
     position_tolerance: 0.1
     angle_tolerance: 0.05
@@ -120,10 +124,8 @@ recovery_node:
     # stuck, and aborts the mission or terminates EasyNav when that is not enough.
     recovery_manager:
       plugin: easynav_simple_recovery/SimpleRecoveryManager
-      robot_radius: 0.30
-      stop_distance: 0.3          # brake if an obstacle is this close ahead (beyond robot_radius)
+      stop_distance: 0.3          # brake if an obstacle is this close ahead (beyond the robot radius)
       min_obstacle_z: 0.05
-      max_obstacle_z: 2.0
       sensors_timeout: 5.0        # s without sensor data: terminate EasyNav
       max_position_variance: 1.0  # m^2 in x or y: localization lost
       relocalize_timeout: 20.0

@@ -83,7 +83,6 @@ maps_manager_node:
       inflation:
         plugin: easynav_costmap_maps_manager/CostmapMapsManager/InflationFilter
         inflation_radius: 1.3
-        inscribed_radius: 0.25
         cost_scaling_factor: 3.0
 
 planner_node:
@@ -107,6 +106,11 @@ sensors_node:
 
 system_node:
   ros__parameters:
+    # The robot's shape, shared by every component (collision checking, inflation, recovery...).
+    robot_geometry:
+      radius: 0.3
+      inscribed_radius: 0.25  # largest circle inside the robot
+      height: 0.5
     use_sim_time: true
     use_real_time: true
     position_tolerance: 0.3
@@ -120,10 +124,8 @@ recovery_node:
     # stuck, and aborts the mission or terminates EasyNav when that is not enough.
     recovery_manager:
       plugin: easynav_simple_recovery/SimpleRecoveryManager
-      robot_radius: 0.30
-      stop_distance: 0.3          # brake if an obstacle is this close ahead (beyond robot_radius)
+      stop_distance: 0.3          # brake if an obstacle is this close ahead (beyond the robot radius)
       min_obstacle_z: 0.05
-      max_obstacle_z: 2.0
       sensors_timeout: 5.0        # s without sensor data: terminate EasyNav
       max_position_variance: 1.0  # m^2 in x or y: localization lost
       relocalize_timeout: 20.0
