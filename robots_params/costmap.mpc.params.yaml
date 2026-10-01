@@ -106,6 +106,9 @@ recovery_node:
       collision:
         plugin: easynav_collision_safety_reflex/CollisionSafetyReflex
         debug_markers: true
+        downsample_leaf_size: 0.05
+        brake_acc: 1.0
+        safety_margin: 0.05
       # Level-1 recovery (see docs/recoveries_easynav.md). Evaluators diagnose; mitigations are
       # tried in priority order (lower first) for each ERROR diagnostic they can handle:
       #   specific movement fixes (10) -> terminate EasyNav on a miswired graph (100)

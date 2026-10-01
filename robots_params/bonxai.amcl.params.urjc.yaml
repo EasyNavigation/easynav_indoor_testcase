@@ -170,7 +170,8 @@ recovery_node:
         plugin: easynav_no_path_evaluator/NoPathEvaluator
       obstacle_close:
         plugin: easynav_obstacle_too_close_evaluator/ObstacleTooCloseEvaluator
-        safe_distance: 0.4          # ERROR if stopped this close to an obstacle...
+        z_min_filter: 0.3           # ignore the ground seen by the 3D lidar
+        safe_distance: 0.8          # ERROR if stopped this close (from the robot center, radius 0.7)...
         debounce_duration: 0.5      # ...for this long (s)
       controller_stuck:
         plugin: easynav_controller_stuck_evaluator/ControllerStuckEvaluator
@@ -190,7 +191,8 @@ recovery_node:
       retreat:
         plugin: easynav_safe_retreat_recovery/SafeRetreatRecovery
         priority: 10
-        safe_distance: 0.5          # > obstacle_close.safe_distance, so it does not re-trigger
+        z_min_filter: 0.3           # ignore the ground seen by the 3D lidar
+        safe_distance: 0.9          # > obstacle_close.safe_distance, so it does not re-trigger
         retreat_speed: 0.1
       advance:
         plugin: easynav_advance_recovery/AdvanceRecovery
