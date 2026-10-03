@@ -17,14 +17,13 @@ import os
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, ExecuteProcess, Shutdown
-from launch.conditions import IfCondition
+from launch.actions import DeclareLaunchArgument, Shutdown
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
 
-# EasyNav with the RPP controller in safety mode, with the process memory locked
-# (costmap.rpp.safe.params.yaml).
+# EasyNav with the RPP controller, set up to try the collision safety reflex by hand
+# (costmap.rpp.reflex.params.yaml).
 def generate_launch_description():
 
     bringup_dir = get_package_share_directory('easynav_indoor_testcase')
@@ -35,7 +34,7 @@ def generate_launch_description():
     declare_params_file_cmd = DeclareLaunchArgument(
         'params_file',
         default_value=os.path.join(
-            bringup_dir, 'robots_params', 'costmap.rpp.safe.params.yaml'),
+            bringup_dir, 'robots_params', 'costmap.rpp.reflex.params.yaml'),
         description='Full path to the ROS2 parameters file for easynav',
     )
 
@@ -56,20 +55,6 @@ def generate_launch_description():
         on_exit=Shutdown(reason='EasyNav (system_main) exited'),
     )
 
-    declare_safety_channel_cmd = DeclareLaunchArgument(
-        'safety_channel', default_value='true',
-        description='Publish an "all clear" safety status; false to publish your own '
-                    '(e.g. a protective stop) on /easynav_safety_status',
-    )
-
-    # Stands in for the safety channel (safety PLC, scanner): "all clear", 10 times per second.
-    safety_status_cmd = ExecuteProcess(
-        cmd=['ros2', 'topic', 'pub', '-r', '10', '/easynav_safety_status',
-             'easynav_interfaces/msg/SafetyStatus', '{active_field: simulation}'],
-        output='log',
-        condition=IfCondition(LaunchConfiguration('safety_channel')),
-    )
-
     rviz_cmd = Node(
         package='rviz2',
         executable='rviz2',
@@ -81,9 +66,7 @@ def generate_launch_description():
     ld = LaunchDescription()
     ld.add_action(declare_params_file_cmd)
     ld.add_action(declare_rviz_config_cmd)
-    ld.add_action(declare_safety_channel_cmd)
     ld.add_action(easynav_system_cmd)
-    ld.add_action(safety_status_cmd)
     ld.add_action(rviz_cmd)
 
     return ld

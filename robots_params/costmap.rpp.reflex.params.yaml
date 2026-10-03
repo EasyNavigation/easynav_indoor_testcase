@@ -1,6 +1,6 @@
-# costmap.rpp.params.yaml in safety mode (system_node.safety.*), with the process memory locked.
-# Requires real-time limits: rtprio >= 80 and, for lock_memory, memlock unlimited
-# (see "Real-time system setup" in the EasyNav docs). Otherwise EasyNav does not start.
+# costmap.rpp.params.yaml set up to try the collision safety reflex by hand: the path is planned
+# once per goal (an obstacle placed later is not avoided), RPP does not slow down near obstacles,
+# and nothing backs the robot away from them (no obstacle_close evaluator, no retreat mitigation).
 
 controller_node:
   ros__parameters:
@@ -15,10 +15,6 @@ controller_node:
       max_linear_decel: 1.0
       max_angular_acc: 2.0
       max_angular_decel: 2.0
-    # Required in safety mode: no stale command, and the command republished so the robot's
-    # driver can detect that EasyNav stopped commanding (deadline QoS of twice the period).
-    cmd_timeout: 0.5
-    cmd_vel_keepalive_period: 0.1
     controller_types: [rpp]
     rpp:
       rt_freq: 30.0
@@ -46,7 +42,7 @@ controller_node:
       curvature_lookahead_dist: 1.0
       interpolate_curvature_after_goal: false
       # Obstacle-proximity regulation (EasyNav's point-cloud based equivalent of Nav2's cost-based term)
-      use_obstacle_regulated_linear_velocity_scaling: true
+      use_obstacle_regulated_linear_velocity_scaling: false  # The reflex must do the braking
       obstacle_scaling_dist: 0.4
       obstacle_scaling_gain: 0.8
       # Approach to goal
@@ -101,7 +97,7 @@ planner_node:
       freq: 0.5
       plugin: easynav_costmap_planner/CostmapPlanner
       cost_factor: 10.0
-      continuous_replan: true
+      continuous_replan: false  # One path per goal: obstacles placed later are not avoided
 
 sensors_node:
   ros__parameters:
@@ -120,44 +116,33 @@ system_node:
       inscribed_radius: 0.25  # largest circle inside the robot
       height: 0.5
     use_sim_time: true
-    use_real_time: true  # Required in safety mode
+    use_real_time: true
     position_tolerance: 0.3
     angle_tolerance: 0.15
-    safety:
-      mode: true
-      lock_memory: true
-      heartbeat:
-        period: 0.1  # Required in safety mode: "easynav_heartbeat", from the RT cycle
-      # Required in safety mode: the safety channel's state on "easynav_safety_status"; without
-      # one within the timeout, the robot is stopped. Here, the launcher publishes "all clear".
-      status:
-        timeout: 0.5
-      # Limits configured in the safety channel (e.g. the safety PLC's safely limited speed).
-      # Not applied to the commands: robot_limits (controller_node) may not exceed them.
-      plc_limits:
-        max_linear_vel: 0.8
-        max_angular_vel: 1.5
 
 recovery_node:
   ros__parameters:
     use_sim_time: true
+    # Recovery system: a RecoveryManagerBase plugin, with its own parameters below it (for the
+    # diagnostic one: safety reflexes, evaluators, mitigations and their arbitration).
     recovery_manager:
       plugin: easynav_diagnostic_recovery/DiagnosticRecoveryManager
+      # Level-0 safety reflex: stops the robot on imminent collision, checked every RT cycle
+      # whoever produced cmd_vel (controller or mitigation). See docs/recoveries_easynav.md.
       safety_reflex_types: [collision]
-      evaluator_types: [no_path, obstacle_close, controller_stuck, amcl_convergence, ros_graph]
-      mitigation_types: [retreat, amcl_relocalize, advance, shutdown, human_assistance, cancel_mission]
       collision:
         plugin: easynav_collision_safety_reflex/CollisionSafetyReflex
         debug_markers: true
         downsample_leaf_size: 0.05
         brake_acc: 1.0
         safety_margin: 0.05
+      # Level-1 recovery (see docs/recoveries_easynav.md). Evaluators diagnose; mitigations are
+      # tried in priority order (lower first) for each ERROR diagnostic they can handle:
+      #   specific movement fixes (10) -> terminate EasyNav on a miswired graph (100)
+      #   -> wait for a human (1000) -> cancel the mission (2000).
+      evaluator_types: [no_path, controller_stuck, amcl_convergence, ros_graph]
       no_path:
         plugin: easynav_no_path_evaluator/NoPathEvaluator
-      obstacle_close:
-        plugin: easynav_obstacle_too_close_evaluator/ObstacleTooCloseEvaluator
-        safe_distance: 0.4
-        debounce_duration: 0.5
       controller_stuck:
         plugin: easynav_controller_stuck_evaluator/ControllerStuckEvaluator
         linear_velocity_threshold: 0.02
@@ -165,19 +150,17 @@ recovery_node:
         stuck_time_threshold: 3.0
       amcl_convergence:
         plugin: easynav_costmap_localizer/AmclConvergenceEvaluator
-        covariance_threshold: 1.0
+        covariance_threshold: 1.0   # same as amcl_relocalize
       ros_graph:
         plugin: easynav_ros_graph_evaluator/RosGraphEvaluator
         freq: 1.0
-        startup_grace: 15.0
+        startup_grace: 15.0         # s after activation for the simulator/driver to come up
         error_debounce: 2.0
+        # Optional inputs that may legitimately have no publisher.
         ignored_topics: ["goal_pose", "initialpose", "incoming_map", "incoming_occ_map", "incoming_pc2_map"]
+        # Tools that only watch cmd_vel: they do not count as something driving the robot.
         ignored_consumers: ["easynav_tui_*", "_ros2cli*"]
-      retreat:
-        plugin: easynav_safe_retreat_recovery/SafeRetreatRecovery
-        priority: 10
-        safe_distance: 0.5
-        retreat_speed: 0.1
+      mitigation_types: [amcl_relocalize, advance, shutdown, human_assistance, cancel_mission]
       amcl_relocalize:
         plugin: easynav_costmap_localizer/AmclRelocalizeMitigation
         priority: 10
@@ -189,7 +172,7 @@ recovery_node:
         priority: 10
         advance_distance: 0.3
         advance_speed: 0.1
-        escalate_after: 15.0
+        escalate_after: 15.0        # s of repeated advances before giving up to the next rung
         episode_gap: 10.0
       shutdown:
         plugin: easynav_shutdown_recovery/ShutdownRecovery
